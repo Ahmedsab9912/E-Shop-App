@@ -22,7 +22,7 @@ Follow these steps to get started with the E-Commerce App:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/e_commerce_app.git
+   https://github.com/Ahmedsab9912/E-Shop-App.git
 
 2. **Navigate to the Project Directory:**
    ```bash
@@ -32,8 +32,8 @@ Follow these steps to get started with the E-Commerce App:
    ```bash
     flutter pub get
 4. **Run the Application:**
-  `bash 
-    flutter run
+    ``bash 
+    flutter run 
 
 
 ## Project Structure
