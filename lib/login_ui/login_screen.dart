@@ -1,8 +1,7 @@
-
+import 'package:e_commerce_app/Dashboard/bottom_navigation.dart';
 import 'package:e_commerce_app/app_theme/app_theme.dart';
 import 'package:e_commerce_app/login_ui/sign_up_screen.dart';
 import 'package:flutter/material.dart';
-import '../Dashboard/home_screen.dart';
 import 'auth.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,7 +20,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isObscure = true; // Initially obscure the password
   bool _isLoading = false; // Track loading state
   final Auth _auth = Auth();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Add GlobalKey for Scaffold
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>(); // Add GlobalKey for Scaffold
 
   @override
   Widget build(BuildContext context) {
@@ -113,32 +113,37 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             GestureDetector(
-              onTap: _isLoading ? null : () async {
-                setState(() {
-                  _isLoading = true; // Start loading
-                });
-                try {
-                  await _auth.logInWithEmailAndPassword(
-                    email: user_email.text.trim(),
-                    password: user_pass.text.trim(),
-                  );
-                  _showSnackbar("Login successful", Colors.green); // Show success message
-                  // Navigate to Dashboard screen after successful sign-in
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => const HomeScreen(), // Replace with your Dashboard screen
-                    ),
-                  );
-                } catch (e) {
-                  print("Failed to Log in: $e");
-                  _showSnackbar("Wrong Email Password Please Check!", Colors.red); // Show error message
-                } finally {
-                  setState(() {
-                    _isLoading = false; // Stop loading
-                  });
-                }
-              },
+              onTap: _isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        _isLoading = true; // Start loading
+                      });
+                      try {
+                        await _auth.logInWithEmailAndPassword(
+                          email: user_email.text.trim(),
+                          password: user_pass.text.trim(),
+                        );
+                        _showSnackbar("Login successful",
+                            Colors.green); // Show success message
+                        // Navigate to Dashboard screen after successful sign-in
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const BottomNavigation(), // Replace with your Dashboard screen
+                          ),
+                        );
+                      } catch (e) {
+                        print("Failed to Log in: $e");
+                        _showSnackbar("Wrong Email Password Please Check!",
+                            Colors.red); // Show error message
+                      } finally {
+                        setState(() {
+                          _isLoading = false; // Stop loading
+                        });
+                      }
+                    },
               child: Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Container(
@@ -151,16 +156,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Center(
                     child: _isLoading
                         ? const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
                         : const Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                            "Login",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                   ),
                 ),
               ),

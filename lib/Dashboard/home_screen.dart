@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:e_commerce_app/Dashboard/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,11 +22,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Fetch products from API
   late Future<List<ProductsModel>> futureProducts;
+  List<ProductsModel> allProducts = [];
+  List<ProductsModel> filteredProducts = [];
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     futureProducts = fetchProducts();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterProducts(String query) {
+    final filtered = allProducts.where((product) {
+      final titleLower = product.title!.toLowerCase();
+      final queryLower = query.toLowerCase();
+      return titleLower.contains(queryLower);
+    }).toList();
+
+    setState(() {
+      filteredProducts = filtered;
+    });
   }
 
   @override
@@ -48,10 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: FloatingActionButton(
                   backgroundColor: Colors.yellow[700],
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CartPage()));
                   },
                   shape: const CircleBorder(),
-                  child: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                  child: const Icon(Icons.shopping_bag_outlined,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -87,7 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       appBar: AppBar(
-        title: Text('Discover Products',style: TextStyle(fontSize: size.height * 0.03),),
+        title: Text(
+          'Discover Products',
+          style: TextStyle(fontSize: size.height * 0.03),
+        ),
       ),
       drawer: Drawer(
         child: Column(
@@ -126,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (BuildContext context) => const LoginScreen()),
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => const LoginScreen()),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -144,38 +172,69 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(
+            height: size.height * 0.055,
+            width: size.width * 0.8,
+            child: TextFormField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Search products...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onChanged: _filterProducts,
+            ),
+          ),
           Expanded(
             child: FutureBuilder<List<ProductsModel>>(
               future: futureProducts,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ));
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No products available'));
                 } else {
-                  List<ProductsModel> products = snapshot.data!;
+                  if (allProducts.isEmpty) {
+                    allProducts = snapshot.data!;
+                    filteredProducts = allProducts;
+                  }
                   return CustomScrollView(
                     slivers: [
                       SliverPadding(
                         padding: const EdgeInsets.all(10),
                         sliver: SliverList(
                           delegate: SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                              if (index.isOdd) return const SizedBox(height: 10); // Add spacing between rows
+                            (BuildContext context, int index) {
+                              if (index.isOdd)
+                                return const SizedBox(
+                                    height: 10); // Add spacing between rows
                               final int itemIndex = index ~/ 2;
                               return Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Expanded(child: buildProductItem(context, products[itemIndex * 2])),
+                                  Expanded(
+                                      child: buildProductItem(context,
+                                          filteredProducts[itemIndex * 2])),
                                   const SizedBox(width: 10),
-                                  if (itemIndex * 2 + 1 < products.length)
-                                    Expanded(child: buildProductItem(context, products[itemIndex * 2 + 1])),
+                                  if (itemIndex * 2 + 1 <
+                                      filteredProducts.length)
+                                    Expanded(
+                                        child: buildProductItem(
+                                            context,
+                                            filteredProducts[
+                                                itemIndex * 2 + 1])),
                                 ],
                               );
                             },
-                            childCount: (products.length * 2 + 1) ~/ 2,
+                            childCount: (filteredProducts.length * 2 + 1) ~/ 2,
                           ),
                         ),
                       ),
@@ -233,14 +292,20 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Padding(
                 padding: EdgeInsets.only(top: size.height * 0.02),
                 child: Text(
-                  _truncateText(product.title!, 12),
-                  style: TextStyle(fontSize: size.height * 0.02, fontWeight: FontWeight.bold),
+                  _truncateText(product.title!, 3),
+                  style: TextStyle(
+                      fontSize: size.height * 0.015,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.only(top: size.height * 0.01),
-              child: Center(child: Text('\$${product.price}', style: TextStyle(fontSize: size.height * 0.03))),
+              child: Center(
+                  child: Text('\$${product.price}',
+                      style: TextStyle(
+                          fontSize: size.height * 0.03,
+                          fontWeight: FontWeight.bold))),
             ),
           ],
         ),

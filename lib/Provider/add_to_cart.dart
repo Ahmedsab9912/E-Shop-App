@@ -1,17 +1,25 @@
-
 import 'package:flutter/material.dart';
 import '../Models/ProductsModel.dart';
 
 class AddToCart extends ChangeNotifier {
   final List<Map<String, dynamic>> _cartItems = [];
+  final Set<int> _likedProductIds = {}; // Use a set to store liked product IDs
+  List<ProductsModel> _allProducts = []; // Use a private list for products
 
   List<Map<String, dynamic>> get cartItems => _cartItems;
+  Set<int> get likedProductIds => _likedProductIds; // Public getter
+  List<ProductsModel> get allProducts => _allProducts; // Public getter
+
+  void setProducts(List<ProductsModel> products) {
+    _allProducts = products;
+    notifyListeners();
+  }
 
   void addToCart(ProductsModel product, BuildContext context) {
-    final index = _cartItems.indexWhere((item) => item['product'].id == product.id);
+    final index =
+        _cartItems.indexWhere((item) => item['product'].id == product.id);
     if (index == -1) {
       _cartItems.add({'product': product, 'quantity': 1});
-      // Show a success message when an item is added to the cart
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Item added to the cart successfully."),
@@ -20,7 +28,6 @@ class AddToCart extends ChangeNotifier {
         ),
       );
     } else {
-      // Show a message when the item is already in the cart
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Item is already in the cart."),
@@ -32,12 +39,11 @@ class AddToCart extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void removeFromCart(ProductsModel product, BuildContext context) {
-    final index = _cartItems.indexWhere((item) => item['product'].id == product.id);
+    final index =
+        _cartItems.indexWhere((item) => item['product'].id == product.id);
     if (index != -1) {
       _cartItems.removeAt(index);
-      // Show a message when the item is removed from the cart
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Item removed from the cart."),
@@ -49,14 +55,14 @@ class AddToCart extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void clearCart() {
     _cartItems.clear();
     notifyListeners();
   }
 
   void increment(ProductsModel product) {
-    final index = _cartItems.indexWhere((item) => item['product'].id == product.id);
+    final index =
+        _cartItems.indexWhere((item) => item['product'].id == product.id);
     if (index != -1) {
       _cartItems[index]['quantity'] += 1;
     }
@@ -64,7 +70,8 @@ class AddToCart extends ChangeNotifier {
   }
 
   void decrement(ProductsModel product) {
-    final index = _cartItems.indexWhere((item) => item['product'].id == product.id);
+    final index =
+        _cartItems.indexWhere((item) => item['product'].id == product.id);
     if (index != -1) {
       int currentQuantity = _cartItems[index]['quantity'];
       if (currentQuantity > 1) {
@@ -73,9 +80,6 @@ class AddToCart extends ChangeNotifier {
       }
     }
   }
-
-
-
 
   double get totalAmount {
     double total = 0.0;
@@ -87,5 +91,19 @@ class AddToCart extends ChangeNotifier {
 
   int get count {
     return _cartItems.length;
+  }
+
+  bool isLiked(int productId) {
+    return _likedProductIds.contains(productId);
+  }
+
+  void addProduct(int productId) {
+    _likedProductIds.add(productId);
+    notifyListeners();
+  }
+
+  void removeProduct(int productId) {
+    _likedProductIds.remove(productId);
+    notifyListeners();
   }
 }

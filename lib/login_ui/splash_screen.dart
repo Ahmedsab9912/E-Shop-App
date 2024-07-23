@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'login_screen.dart';
 
-
-
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -17,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds:2), () {
+    Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -31,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return const Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children:  [
+        children: [
           Center(
             child: Image(
                 height: 430,

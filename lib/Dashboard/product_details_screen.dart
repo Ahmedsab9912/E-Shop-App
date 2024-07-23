@@ -1,9 +1,9 @@
+import 'package:e_commerce_app/Add_To_Cart_Screen/add_to_cart_screen.dart';
+import 'package:e_commerce_app/Models/ProductsModel.dart';
+import 'package:e_commerce_app/Provider/add_to_cart.dart';
 import 'package:e_commerce_app/app_theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../Add_To_Cart_Screen/add_to_cart_screen.dart';
-import '../Models/ProductsModel.dart';
-import '../Provider/add_to_cart.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final ProductsModel product;
@@ -14,9 +14,13 @@ class ProductDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final myprovider = Provider.of<AddToCart>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Product Details",style: TextStyle(fontSize: size.height * 0.025),),
+        title: Text(
+          "Product Details",
+          style: TextStyle(fontSize: size.height * 0.025),
+        ),
         centerTitle: true,
         actions: [
           Padding(
@@ -24,9 +28,13 @@ class ProductDetailScreen extends StatelessWidget {
             child: Stack(
               children: [
                 IconButton(
-                  icon: Icon(Icons.shopping_bag_outlined, color: Colors.black, size: size.height * 0.035),
+                  icon: Icon(Icons.shopping_bag_outlined,
+                      color: Colors.black, size: size.height * 0.035),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CartPage()));
                   },
                 ),
                 Positioned(
@@ -90,7 +98,8 @@ class ProductDetailScreen extends StatelessWidget {
                         color: Colors.orange,
                         size: size.height * 0.04,
                       ),
-                      Text(' ${product.rating?.rate?.toStringAsFixed(1)}',
+                      Text(
+                          ' ${product.rating?.rate?.toStringAsFixed(1) ?? '0.0'}',
                           style: TextStyle(fontSize: size.height * 0.03)),
                       Padding(
                         padding: EdgeInsets.only(left: size.width * 0.02),
@@ -99,7 +108,7 @@ class ProductDetailScreen extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.all(size.height * 0.004),
                             child: Text(
-                                'Reviews: ${product.rating?.count ?? 0}',
+                                'Reviews: ${product.rating?.count?.toString() ?? '0'}',
                                 style: TextStyle(fontSize: size.height * 0.02)),
                           ),
                         ),
@@ -110,7 +119,7 @@ class ProductDetailScreen extends StatelessWidget {
                     padding: EdgeInsets.only(right: size.width * 0.02),
                     child: Row(
                       children: [
-                        Text('\$${product.price?.toStringAsFixed(2)}',
+                        Text('\$${product.price?.toStringAsFixed(2) ?? '0.00'}',
                             style: TextStyle(
                                 fontSize: size.height * 0.03,
                                 fontWeight: FontWeight.bold)),
@@ -120,12 +129,36 @@ class ProductDetailScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(height: size.height * 0.02),
-              Text(product.title!,
-                  style: TextStyle(
-                      fontSize: size.height * 0.025,
-                      fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(product.title!,
+                      style: TextStyle(
+                          fontSize: size.height * 0.025,
+                          fontWeight: FontWeight.bold)),
+                  // Add Liked Button
+                  IconButton(
+                    onPressed: () {
+                      if (myprovider.isLiked(product.id!.toInt())) {
+                        myprovider.removeProduct(product.id!.toInt());
+                      } else {
+                        myprovider.addProduct(product.id!.toInt());
+                      }
+                    },
+                    icon: Icon(
+                      Icons.favorite,
+                      color: myprovider.isLiked(product.id!.toInt())
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+                  )
+                ],
+              ),
               SizedBox(height: size.height * 0.02),
-              Text("Description:",style: TextStyle(color: Colors.grey[700]),),
+              Text(
+                "Description:",
+                style: TextStyle(color: Colors.grey[700]),
+              ),
               SizedBox(height: size.height * 0.01),
               Text(product.description!,
                   style: TextStyle(fontSize: size.height * 0.018)),
@@ -133,13 +166,13 @@ class ProductDetailScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('\$${product.price?.toStringAsFixed(2)}',
+                  Text('\$${product.price?.toStringAsFixed(2) ?? '0.00'}',
                       style: TextStyle(
                           fontSize: size.height * 0.03,
                           fontWeight: FontWeight.bold)),
                   InkWell(
                     onTap: () {
-                      myprovider.addToCart(product,context);
+                      myprovider.addToCart(product, context);
                     },
                     child: Container(
                       height: size.height * 0.055,
@@ -153,12 +186,15 @@ class ProductDetailScreen extends StatelessWidget {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(right: size.width * 0.02),
-                            child: const Icon(Icons.shopping_bag, color: Colors.white),
+                            child: const Icon(Icons.shopping_bag,
+                                color: Colors.white),
                           ),
                           Center(
                             child: Text(
                               'Add To Cart',
-                              style: TextStyle(fontSize: size.height * 0.02, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: size.height * 0.02,
+                                  color: Colors.white),
                             ),
                           ),
                         ],
